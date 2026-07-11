@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  # 1. База данных (используем pgvector, как ты хотел)
+  db:
+    image: pgvector/pgvector:pg15
+    container_name: brainbook_db_container
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 14141407
+      POSTGRES_DB: brainbook_db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d brainbook_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  # 2. Бэкенд (FastAPI)
+  backend:
+    build: 
+      context: ./backend # Убедись, что Dockerfile лежит внутри папки backend
+    container_name: brainbook_backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:14141407@db:5432/brainbook_db
+      ENV: production
+      PYTHONPATH: /app
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # 3. Фронтенд (React)
+  frontend:
+    build: 
+      context: ./frontend # Dockerfile должен лежать в папке frontend
+    container_name: brainbook_frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules # Чтобы локальные node_modules не конфликтовали с контейнером
+    depends_on:
+      - backend
+
+volumes:
+  pgdata: # Чтобы данные базы сохранялись при перезапуске контейнера
