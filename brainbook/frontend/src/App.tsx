@@ -52,7 +52,6 @@ function App() {
     <div className="min-h-screen bg-white text-gray-900 p-8 max-w-3xl mx-auto font-sans">
       <h1 className="text-2xl font-light mb-8">Brainbook</h1>
 
-      {/* Секция загрузки */}
       <section className="mb-10">
         <h2 className="text-sm font-light uppercase tracking-widest text-gray-500 mb-4">Материал</h2>
         {!file ? (
@@ -64,7 +63,6 @@ function App() {
         )}
       </section>
 
-      {/* Секция анализа */}
       <section>
         <h2 className="text-sm font-light uppercase tracking-widest text-gray-500 mb-4">Анализ</h2>
         <div className="space-y-4">
