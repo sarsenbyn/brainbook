@@ -52,14 +52,11 @@ def run_migrations_offline() -> None:
 
 
 def run_migrations_online() -> None:
-    # Получаем URL из конфига
     connectable = create_async_engine(
         config.get_main_option("sqlalchemy.url"),
         poolclass=pool.NullPool,
     )
 
-    # Используем sync_engine, чтобы Alembic (который синхронен)
-    # мог безопасно работать с асинхронным движком
     with connectable.sync_engine.connect() as connection:
         context.configure(
             connection=connection, 
